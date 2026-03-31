@@ -1,0 +1,9 @@
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "client@example.com",
+  "service": "AI Automation (n8n, Make.com, workflows)",
+  "budget": "$300 – $700",
+  "timeline": "ASAP (ready to start now)",
+  "description": "I need an automation workflow that captures leads, stores them in Google Sheets, and sends automatic follow-up emails."
+}

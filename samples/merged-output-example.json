@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-03-30T23:33:23.696Z",
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "client@example.com",
+  "service": "Website Development (Webflow / Framer)",
+  "budget": "$300 – $700",
+  "timeline": "Within 1 week",
+  "description": "I need a website for my restaurant.",
+  "leadQuality": "Medium",
+  "priority": "High",
+  "intent": "Serious",
+  "summary": "Lead wants a restaurant website within 1 week.",
+  "recommendedAction": "Clarify project scope and confirm preferred tech stack.",
+  "replyTone": "Professional and friendly"
+}

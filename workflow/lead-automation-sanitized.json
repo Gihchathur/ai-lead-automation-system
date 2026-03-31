@@ -1,0 +1,433 @@
+{
+  "name": "Lead Automation System",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "YOUR_WEBHOOK_PATH",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -16,
+        -192
+      ],
+      "id": "WEBHOOK_NODE_ID",
+      "name": "Webhook",
+      "webhookId": "YOUR_WEBHOOK_ID"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = items[0].json.body?.data?.fields || [];\n\nconst result = {};\n\nfor (const field of data) {\n  const label = field.label;\n\n  if (label === \"First name\") result.firstName = field.value;\n  if (label === \"Last name\") result.lastName = field.value;\n  if (label === \"Email\") result.email = field.value;\n\n  if (label === \"What service are you interested in?\") {\n    const selectedId = field.value?.[0];\n    const option = field.options?.find(o => o.id === selectedId);\n    result.service = option ? option.text : \"\";\n  }\n\n  if (label === \"Budget\") {\n    const selectedId = field.value?.[0];\n    const option = field.options?.find(o => o.id === selectedId);\n    result.budget = option ? option.text : \"\";\n  }\n\n  if (label === \"When do you want to start?\") {\n    const selectedId = field.value?.[0];\n    const option = field.options?.find(o => o.id === selectedId);\n    result.timeline = option ? option.text : \"\";\n  }\n\n  if (label === \"Description\") result.description = field.value;\n}\n\nreturn [{ json: result }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        -192
+      ],
+      "id": "CODE_NODE_1_ID",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are a sales assistant helping qualify inbound leads for a freelance automation business. Analyze the lead and return ONLY valid JSON. Do not include any extra text outside JSON."
+            },
+            {
+              "type": "HumanMessagePromptTemplate",
+              "message": "=Lead data: First name: {{$json.firstName}} Last name: {{$json.lastName}} Email: {{$json.email}} Service: {{$json.service}} Budget: {{$json.budget}} Timeline: {{$json.timeline}} Description: {{$json.description}} Instructions: - Evaluate lead quality as High, Medium, or Low - Evaluate priority as High, Medium, or Low - Determine intent as Serious, Exploring, or Unclear - Provide a short summary of the lead - Suggest the best next action - Suggest the best reply tone Return ONLY this JSON format: { \"leadQuality\": \"\", \"priority\": \"\", \"intent\": \"\", \"summary\": \"\", \"recommendedAction\": \"\", \"replyTone\": \"\" }"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        464,
+        0
+      ],
+      "id": "LLM_CHAIN_NODE_ID",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        464,
+        208
+      ],
+      "id": "OPENAI_MODEL_NODE_ID",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "OPENAI_CREDENTIAL_ID",
+          "name": "OPENAI_API_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const lead = $items(\"Code in JavaScript\", 0, 0)[0].json;\nconst ai = $json;\n\nreturn [{\n  json: {\n    timestamp: new Date().toISOString(),\n    firstName: lead.firstName,\n    lastName: lead.lastName,\n    email: lead.email,\n    service: lead.service,\n    budget: lead.budget,\n    timeline: lead.timeline,\n    description: lead.description,\n    leadQuality: ai.leadQuality,\n    priority: ai.priority,\n    intent: ai.intent,\n    summary: ai.summary,\n    recommendedAction: ai.recommendedAction,\n    replyTone: ai.replyTone\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1248,
+        -176
+      ],
+      "id": "CODE_NODE_2_ID",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "Lead Automation Demo",
+          "cachedResultUrl": "YOUR_GOOGLE_SHEET_URL"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sheet1",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "firstName",
+              "displayName": "firstName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "lastName",
+              "displayName": "lastName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "service",
+              "displayName": "service",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "budget",
+              "displayName": "budget",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "timeline",
+              "displayName": "timeline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "leadQuality",
+              "displayName": "leadQuality",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "priority",
+              "displayName": "priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "intent",
+              "displayName": "intent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "recommendedAction",
+              "displayName": "recommendedAction",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "replyTone",
+              "displayName": "replyTone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1504,
+        -304
+      ],
+      "id": "GOOGLE_SHEETS_NODE_ID",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GOOGLE_SHEETS_CREDENTIAL_ID",
+          "name": "GOOGLE_SHEETS_CREDENTIAL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $json.text;\n\nreturn [\n  {\n    json: JSON.parse(raw)\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        784,
+        0
+      ],
+      "id": "CODE_NODE_3_ID",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        944,
+        -176
+      ],
+      "id": "MERGE_NODE_ID",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{$json.email}}",
+        "subject": "=Thanks for your inquiry about {{$json.service}}",
+        "message": "=Hi {{$json.firstName}},\n\nThanks for reaching out about {{$json.service}}.\n\nI reviewed your request and I’d be happy to help. Since you’d like to start {{$json.timeline}}, the next best step would be to clarify a few details about the project scope, required features, and your preferred technical approach.\n\nPlease reply with any additional details you have, and we can discuss the best way to move forward.\n\nBest,\nYOUR_NAME",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1504,
+        -64
+      ],
+      "id": "GMAIL_NODE_ID",
+      "name": "Send a message",
+      "webhookId": "GMAIL_NODE_WEBHOOK_ID",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "GMAIL_CREDENTIAL_ID",
+          "name": "GMAIL_OAUTH_CREDENTIAL"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "WORKFLOW_VERSION_ID",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "INSTANCE_ID"
+  },
+  "id": "WORKFLOW_ID",
+  "tags": []
+}

@@ -1,0 +1,141 @@
+{
+  "headers": {
+    "host": "your-n8n-instance.example.com",
+    "user-agent": "Tally Webhooks",
+    "content-type": "application/json"
+  },
+  "params": {},
+  "query": {},
+  "body": {
+    "eventId": "sample-event-id",
+    "eventType": "FORM_RESPONSE",
+    "createdAt": "2026-03-31T12:00:00.000Z",
+    "data": {
+      "responseId": "sample-response-id",
+      "fields": [
+        {
+          "key": "question_first_name",
+          "label": "First name",
+          "type": "INPUT_TEXT",
+          "value": "John"
+        },
+        {
+          "key": "question_last_name",
+          "label": "Last name",
+          "type": "INPUT_TEXT",
+          "value": "Doe"
+        },
+        {
+          "key": "question_email",
+          "label": "Email",
+          "type": "INPUT_EMAIL",
+          "value": "client@example.com"
+        },
+        {
+          "key": "question_service",
+          "label": "What service are you interested in?",
+          "type": "DROPDOWN",
+          "value": [
+            "service-option-1"
+          ],
+          "options": [
+            {
+              "id": "service-option-1",
+              "text": "AI Automation (n8n, Make.com, workflows)"
+            },
+            {
+              "id": "service-option-2",
+              "text": "Custom AI Agent / Chatbot"
+            },
+            {
+              "id": "service-option-3",
+              "text": "Website Development (Webflow / Framer)"
+            },
+            {
+              "id": "service-option-4",
+              "text": "API Integration / Backend Automation"
+            },
+            {
+              "id": "service-option-5",
+              "text": "SEO / Organic Growth"
+            },
+            {
+              "id": "service-option-6",
+              "text": "Conversion Rate Optimization (CRO)"
+            },
+            {
+              "id": "service-option-7",
+              "text": "Analytics Setup (GA4, Tracking)"
+            },
+            {
+              "id": "service-option-8",
+              "text": "Other (please specify below)"
+            }
+          ]
+        },
+        {
+          "key": "question_description",
+          "label": "Description",
+          "type": "TEXTAREA",
+          "value": "I need an automation workflow that captures leads, stores them in Google Sheets, and sends automatic follow-up emails."
+        },
+        {
+          "key": "question_budget",
+          "label": "Budget",
+          "type": "MULTIPLE_CHOICE",
+          "value": [
+            "budget-option-2"
+          ],
+          "options": [
+            {
+              "id": "budget-option-1",
+              "text": "$100 – $300"
+            },
+            {
+              "id": "budget-option-2",
+              "text": "$300 – $700"
+            },
+            {
+              "id": "budget-option-3",
+              "text": "$700 – $1500"
+            },
+            {
+              "id": "budget-option-4",
+              "text": "$1500+"
+            },
+            {
+              "id": "budget-option-5",
+              "text": "Not sure yet"
+            }
+          ]
+        },
+        {
+          "key": "question_timeline",
+          "label": "When do you want to start?",
+          "type": "MULTIPLE_CHOICE",
+          "value": [
+            "timeline-option-1"
+          ],
+          "options": [
+            {
+              "id": "timeline-option-1",
+              "text": "ASAP (ready to start now)"
+            },
+            {
+              "id": "timeline-option-2",
+              "text": "Within 1 week"
+            },
+            {
+              "id": "timeline-option-3",
+              "text": "Within 2–4 weeks"
+            },
+            {
+              "id": "timeline-option-4",
+              "text": "Just exploring"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
